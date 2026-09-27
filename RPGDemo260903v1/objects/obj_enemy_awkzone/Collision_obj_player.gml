@@ -1,0 +1,1 @@
+New_Encounter([global.enemies.placeholder, global.enemies.placeholder], spr_battle_background);
