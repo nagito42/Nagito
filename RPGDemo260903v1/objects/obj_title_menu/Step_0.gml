@@ -35,7 +35,7 @@ if enter_key {
 			switch(pos) {
 				//window size
 				case 0:
-			
+				 {window_set_fullscreen(!window_get_fullscreen())}
 					break;
 				//brightness
 				case 1:
@@ -43,6 +43,7 @@ if enter_key {
 					break;
 				//controls
 				case 2:
+				
 			
 					break;
 				//return
