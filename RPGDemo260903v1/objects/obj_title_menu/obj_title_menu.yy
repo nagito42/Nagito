@@ -10,8 +10,8 @@
   "name":"obj_title_menu",
   "overriddenProperties":[],
   "parent":{
-    "name":"Objects",
-    "path":"folders/Objects.yy",
+    "name":"Misc_Objects",
+    "path":"folders/Objects/Misc_Objects.yy",
   },
   "parentObjectId":null,
   "persistent":false,
