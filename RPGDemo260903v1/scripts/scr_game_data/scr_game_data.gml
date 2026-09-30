@@ -32,7 +32,7 @@ enum MODE
 global.party = 
 [
 	{
-		name: "Player",
+		name: "Maxime",
 		hp: 89,
 		hpmax: 89,
 		tp: 10,
@@ -55,11 +55,18 @@ global.enemies =
 		tpmax: 0,
 		strength: 5,
 		sprites : {idle: spr_enemy_placeholder, attack: spr_enemy_placeholder},
-		actions : [],
+		actions : [global.actionlibrary.attack],
 		xpvalue : 15,
 		AIscript : function()
 			{
-				//enemy ai here
+				//Attack Random Party Member
+				var _action = actions[0];
+				var _possible_targets = array_filter(obj_battle.party_units, function(_unit, _index)
+				{
+					return (_unit.hp > 0);
+				});
+				var _target = _possible_targets[irandom(array_length(_possible_targets)-1)];
+				return [_action,_target];
 			},
 	}
 }
