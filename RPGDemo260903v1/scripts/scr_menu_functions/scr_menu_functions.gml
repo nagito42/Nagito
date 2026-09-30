@@ -1,7 +1,7 @@
 //Make a Menu Function
 function Menu(_x,_y, _options, _description = -1, _width = undefined, _height = undefined)
 {
-	with (instance_create_depth(_x,_y,-99999,obj_menus))
+	with (instance_create_depth(_x,_y,-9999,obj_menus))
 	{
 		options = _options;
 		description = _description;
@@ -60,8 +60,12 @@ function Menu_Go_Back()
 	hover = 0;
 }
 
-
-
+function menu_select_action(_user, _action)
+{
+	with (obj_menus) active = false;
+	with (obj_battle) begin_action(_user, _action, _user);
+	with (obj_menus) instance_destroy();
+}
 
 
 

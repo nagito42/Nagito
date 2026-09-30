@@ -45,35 +45,73 @@ Refresh_Render_order();
 //Battle State
 function battle_state_select_action()
 {
-	//Get Current Unit
-	var _unit = unit_turn_order[turn];
-	
-	//Is The Unit Dead Or Unable To Act?
-	if (!instance_exists(_unit)) || (_unit.hp <= 0)
+	if (!instance_exists(obj_menus))
 	{
-		battle_state = battle_state_victory_check;
-		exit;
-	}
+		//Get Current Unit
+		var _unit = unit_turn_order[turn];
 	
-	//Select An Action To Perform
-	//begin_action(_unit.id, global.actionlibrary.attack, _unit.id);
-	
-	//If Unit is Player Controlled
-	if (_unit.object_index == obj_battle_unit_PC)
-	{
-		var _action = global.actionlibrary.attack;
-		var _possible_targets = array_filter(obj_battle.enemy_units, function(_unit, _index)
+		//Is The Unit Dead Or Unable To Act?
+		if (!instance_exists(_unit)) || (_unit.hp <= 0)
 		{
-			return (_unit.hp > 0);
-		});
-		var _target = _possible_targets[irandom(array_length(_possible_targets)-1)];
-		begin_action(_unit.id, _action, _target);
-	}
-	else
-	{
-		//If Unit Is AI Controlled
-		var _enemy_action = _unit.AIscript();
-		if (_enemy_action != -1) begin_action(_unit.id, _enemy_action[0], _enemy_action[1]);
+			battle_state = battle_state_victory_check;
+			exit;
+		}
+	
+		//Select An Action To Perform
+		//begin_action(_unit.id, global.actionlibrary.attack, _unit.id);
+	
+		//If Unit is Player Controlled
+		if (_unit.object_index == obj_battle_unit_PC)
+		{
+			//Compile Action Menu
+			var _menu_options = [];
+			var _submenus = {};
+			
+			var _action_list = _unit.actions;
+			
+			for (var i = 0; i < array_length(_action_list); i++)
+			{
+				var _action = _action_list[i];
+				var _available = true;
+				var _name_and_count = _action.name;
+				if (_action.sub_menu == -1)
+				{
+					array_push(_menu_options, [_name_and_count, menu_select_action, [_unit, _action], _available]);
+				}
+				else
+				{
+					//Create or Add to Submeny
+					if (is_undefined(_submenus[$ _action.sub_menu]))
+					{
+						variable_struct_set(_submenus, _action.sub_menu, [[_name_and_count, menu_select_action, [_unit, _action], _available]]);
+					}
+					else
+					{
+						array_push(_submenus[$ _action.sub_menu], [_name_and_count, menu_select_action, [_unit, _action], _available]);
+					}
+				}
+				
+				var _sub_menus_array = variable_struct_get_names(_submenus);
+				for (var i = 0; i < array_length(_sub_menus_array); i++)
+				{
+					//sort submenu if needed
+					//Top Menu here
+					
+					//add back option
+					array_push(_submenus[$ _sub_menus_array[i]], ["Back", Menu_Go_Back, -1, true]);
+					//add submenu to main menu
+					array_push(_menu_options, [_sub_menus_array[i], Sub_Menu, [_submenus[$ _sub_menus_array[i]]], true]);
+				}
+			}
+			
+			Menu(x + 10, y + 110, _menu_options, , 74, 60);
+		}
+		else
+		{
+			//If Unit Is AI Controlled
+			var _enemy_action = _unit.AIscript();
+			if (_enemy_action != -1) begin_action(_unit.id, _enemy_action[0], _enemy_action[1]);
+		}
 	}
 }
 
