@@ -4,7 +4,7 @@ function New_Encounter(_enemies, _bg)
 		(
 		camera_get_view_x(view_camera[0]),
 		camera_get_view_y(view_camera[0]),
-		-9999999,
+		-999,
 		obj_battle,
 		{enemies: _enemies, creator: id, battlebackground: _bg}
 		);
