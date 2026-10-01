@@ -9,9 +9,23 @@ turn_count = 0;
 round_count = 0;
 battle_wait_time_frames = 30;
 battle_wait_time_remaining = 0;
+battle_text = "";
 current_user = noone;
 current_action = -1;
 current_targets = noone;
+
+//Targeting Cursor
+cursor =
+{
+	active_user : noone,
+	active_target : noone,
+	active_action : -1,
+	target_side : -1,
+	target_index : 0,
+	target_all : false,
+	confirm_delay : 0,
+	active : false
+};
 
 //Create Enemies
 for (var i = 0; i < array_length(enemies); i++)
@@ -90,8 +104,8 @@ function battle_state_select_action()
 						array_push(_submenus[$ _action.sub_menu], [_name_and_count, menu_select_action, [_unit, _action], _available]);
 					}
 				}
-				
-				var _sub_menus_array = variable_struct_get_names(_submenus);
+			}
+			var _sub_menus_array = variable_struct_get_names(_submenus);
 				for (var i = 0; i < array_length(_sub_menus_array); i++)
 				{
 					//sort submenu if needed
@@ -102,8 +116,6 @@ function battle_state_select_action()
 					//add submenu to main menu
 					array_push(_menu_options, [_sub_menus_array[i], Sub_Menu, [_submenus[$ _sub_menus_array[i]]], true]);
 				}
-			}
-			
 			Menu(x + 10, y + 110, _menu_options, , 74, 60);
 		}
 		else
@@ -120,6 +132,7 @@ function begin_action(_user, _action, _targets)
 	current_user = _user;
 	current_action = _action;
 	current_targets = _targets;
+	battle_text = string_ext(_action.description, [_user.name]);
 	if (!is_array(current_targets)) current_targets = [current_targets];
 	battle_wait_time_remaining = battle_wait_time_frames;
 	with (_user)
@@ -186,11 +199,49 @@ function battle_state_perform_action()
 
 function battle_state_victory_check()
 {
+	refresh_party_health_order = function()
+	{
+		party_units_by_hp = []
+		array_copy(party_units_by_hp, 0, party_units, 0, array_length(party_units));
+		array_sort(party_units_by_hp, function(_1,_2)
+		{
+			return _2.hp - _1.hp
+		});
+	}
+	refresh_party_health_order();
+	
+	refresh_enemy_health_order = function()
+	{
+		enemy_units_by_hp = []
+		array_copy(enemy_units_by_hp, 0, enemy_units, 0, array_length(enemy_units));
+		array_sort(enemy_units_by_hp, function(_1,_2)
+		{
+			return _2.hp - _1.hp;
+		});
+	}
+	refresh_enemy_health_order();
+	
+	if (party_units_by_hp[0].hp <= 0)
+	{
+		room_goto(rm_title_screen);
+	}
+	
+	if (enemy_units_by_hp[0].hp <= 0)
+	{
+		for (var i = 0; i < array_length(global.party); i++)
+		{
+			global.party[i].hp = party_units[i].hp
+		}
+		instance_activate_all();
+		instance_destroy(creator);
+		instance_destroy();
+	}
 	battle_state = battle_state_turn_progression;
 }
 
 function battle_state_turn_progression()
 {
+	battle_text = "";
 	turn_count++;
 	turn++;
 	//Loop Turns

@@ -3,7 +3,6 @@ draw_set_color(c_white);
 draw_set_font(global.font_main);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
-show_debug_message("My position is: " + string(x) + ", " + string(y));
 
 var _desc = !(description == -1);
 var _scroll_push = max(0, hover - (visible_options_max - 1 ));
@@ -29,7 +28,7 @@ for (l = 0; l < (visible_options_max + _desc); l++)
 	}
 }
 
-draw_sprite(spr_point, 0, x + xmargin + 8, y + ymargin + ((hover - _scroll_push) * height_line) + 7);
+draw_sprite(spr_point, 0, x + xmargin + 2, y + ymargin + ((hover - _scroll_push) * height_line) + 4);
 if (visible_options_max < array_length(options)) && (hover < array_length(options) - 1)
 {
 	draw_sprite(spr_down_arrow, 0, x + width_full * 0.5, y + height_full - 7);

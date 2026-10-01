@@ -21,19 +21,23 @@ global.actionlibrary =
 	gunfire :
 	{
 		name : "Gunfire",
-		description: "{0} uses gunfire!",
+		description: "{0} fires their gun!",
 		sub_menu : "Skills",
 		tp_cost : 3,
 		target_required : true,
 		target_enemy_default: true,
-		target_all : MODE.NEVER,
+		target_all : MODE.VARIES,
 		user_animation : "skill",
 		effect_sprite : spr_gunfire_effect,
 		effect_target : MODE.ALWAYS,
 		func : function(_users, _targets)
 		{
-			var _damage = irandom_range(10,15);
-			battle_change_hp(_targets[0], -_damage);
+			for (var i = 0; i < array_length(_targets); i++)
+			{
+				var _damage = irandom_range(10,15);
+				if (array_length(_targets) > 1) _damage = ceil(_damage * 0.75);
+				battle_change_hp(_targets[i], -_damage);
+			}
 		}
 		
 	}
